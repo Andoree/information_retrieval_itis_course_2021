@@ -26,7 +26,7 @@ def load_inverted_index_from_file(input_inv_index_path: str) -> List[Set[int]]:
     """
     inverted_index = []
     with codecs.open(input_inv_index_path, 'r', encoding="utf-8") as inv_index_file:
-        for i, line in inv_index_file:
+        for i, line in enumerate(inv_index_file):
             doc_ids = set((int(x) for x in line.strip().split()))
             inverted_index.append(doc_ids)
     return inverted_index
