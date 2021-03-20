@@ -7,7 +7,6 @@ from task_3.utils import load_dict
 
 def main():
     parser = ArgumentParser()
-    # TODO: Help
     parser.add_argument('--input_documents_path', default=r"../task_2/tokenized_texts/documents.txt", type=str,
                         help="Путь к файлу, содержащему токенизированные документы")
     parser.add_argument('--input_dict_path', default=r"../task_2/tokenized_texts/dict.txt", type=str,
