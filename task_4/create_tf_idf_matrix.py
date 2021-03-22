@@ -85,23 +85,27 @@ def save_df_matrix(save_path: str, df: Counter, id2token: Dict[int, str]):
             output_file.write(f"{id2token[token_id]}\t{frequency}\n")
 
 
-def save_tf_idf_matrix(save_path: str, tf_idf_sparse_matrix, id2token: Dict[int, str], sep="~~~"):
+def save_tf_idf_matrix(save_path: str, df_vector: Counter, tf_idf_sparse_matrix, id2token: Dict[int, str], sep="~~~"):
     """
     Сохраняет TF-IDF матрицу в файл. 1 строка соответствует одному документу.
-    Пары <термин, tf-idf термина> разделены между собой пробелом. Термин с его значением
-    TF-IDF в каждой паре разделен разделителем sep
-    :param save_path: Путь к файлу, в который будут сохранены значения TF-IDF
+    Пары <термин, idf термина, tf-idf термина> разделены между собой пробелом.
+    Термин с его значениями IDF и TF-IDF в каждой паре разделен разделителем sep
+    :param df_vector: Вектор документных частот (DF) терминов
+    :param save_path: Путь к файлу, в который будут сохранены значения IDF и TF-IDF
     :param tf_idf_sparse_matrix: Разреженная матрица TF-IDF
     :param id2token: Инвертированный словарь, возвращающий токен по номеру
     его позиции в словаре
-    :param sep: Разделитель между термином и его значением TF-IDF
+    :param sep: Разделитель между термином и его значениями IDF и TF-IDF
     """
     current_doc_id = 0
+    num_documents = tf_idf_sparse_matrix.shape[0]
     non_empty_row_ids, non_empty_col_ids = tf_idf_sparse_matrix.nonzero()
     with codecs.open(save_path, 'w+', encoding="utf-8") as output_file:
         for doc_id, token_id in zip(non_empty_row_ids, non_empty_col_ids):
             tf_idf_value = tf_idf_sparse_matrix[doc_id, token_id]
-            output_file.write(f"{id2token[token_id]}{sep}{tf_idf_value} ")
+            idf_value = num_documents / df_vector[token_id]
+            log_idf_value = math.log2(idf_value)
+            output_file.write(f"{id2token[token_id]}{sep}{log_idf_value}{sep}{tf_idf_value} ")
             if doc_id != current_doc_id:
                 output_file.write("\n")
                 current_doc_id = doc_id
@@ -119,8 +123,8 @@ def main():
                                        r"Записываю DF в файл, потому что почему бы и нет, так нагляднее")
     parser.add_argument('--output_tf_idf_path', default="tf_idf/tf_idf.txt",
                         type=str, help=r"Выходной путь до файла cо значениями TF-IDF. Каждая строка соответствует"
-                                       r"одному документу. В строке пробелами разделены пары <термин, tf-idf термина>,"
-                                       r"а термин и его tf-idf разделены строкой '~~~'")
+                                       r"одному документу. В строке пробелами разделены пары <термин, его idf, его tf-idf>"
+                                       r", а термин и его tf-idf разделены строкой '~~~'")
     args = parser.parse_args()
     input_documents_path = args.input_documents_path
     input_dict_path = args.input_dict_path
@@ -144,7 +148,8 @@ def main():
     # Записываем вектор DF (документные частоты терминов) в файл
     save_df_matrix(save_path=output_df_path, df=documents_frequencies, id2token=id2token)
     # Записываем матрицу TF-IDF в файл
-    save_tf_idf_matrix(save_path=output_tf_idf_path, tf_idf_sparse_matrix=tf_idf_sparse_matrix, id2token=id2token)
+    save_tf_idf_matrix(save_path=output_tf_idf_path, df_vector=documents_frequencies,
+                       tf_idf_sparse_matrix=tf_idf_sparse_matrix, id2token=id2token)
 
 
 if __name__ == '__main__':
