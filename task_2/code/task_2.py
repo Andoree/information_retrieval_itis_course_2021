@@ -37,6 +37,14 @@ def get_lemmatized_doc(raw_text: str, segmenter: Segmenter, morph_tagger: NewsMo
     return lemmatized_tokens
 
 
+def get_doc_id_word_key(review_filename,):
+    """
+    :param review_filename: Имя файла документа
+    :return: Идентификатор документа
+    """
+    doc_id = int(review_filename.split('.')[0].split('_')[-1])
+    return doc_id
+
 def main():
     parser = ArgumentParser()
     parser.add_argument('--input_data_dir', default=r"../../task_1/reviews/reviews", type=str,
@@ -68,7 +76,7 @@ def main():
     lemmatized_tokens_lists = []
     # словарь лемм
     lemmas_dictionary = set()
-    for document_fname in os.listdir(input_data_dir):
+    for document_fname in sorted(os.listdir(input_data_dir), key=lambda x: get_doc_id_word_key(x)):
         document_path = os.path.join(input_data_dir, document_fname)
         with codecs.open(document_path, 'r', encoding="utf-8") as review_file:
             document_raw_text = review_file.read()
