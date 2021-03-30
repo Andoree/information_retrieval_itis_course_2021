@@ -31,8 +31,9 @@ def vectorize_request_tf_idf(request_raw_text: str, segmenter: Segmenter, morph_
     # Токенизируем и лемматизируем документ
     lemmatized_tokens = get_lemmatized_doc(raw_text=request_raw_text, segmenter=segmenter,
                                            morph_tagger=morph_tagger, morph_vocab=morph_vocab)
+
     # Превращаем список слов в список номеров слов в словаре
-    token_ids_list = [token2id[token] for token in lemmatized_tokens]
+    token_ids_list = [token2id[token] for token in lemmatized_tokens if token in token2id.keys()]
     # Подсчитываем частоты слов в документе
     request_tf = Counter(token_ids_list)
     tf_idf_vector_col_indices = []

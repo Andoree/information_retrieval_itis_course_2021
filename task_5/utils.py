@@ -54,3 +54,19 @@ def load_vocab_idfs(vocab_dfs_path: str, token2id: Dict[str, int], num_documents
             token_idf = math.log2(num_documents / token_df)
             token_idfs[token_id] = token_idf
     return token_idfs
+
+
+def load_doc_id_url_mapping_from_index(index_path: str) -> Dict[int, str]:
+    """
+    Подгружает маппинг из номера документа в URL документа
+    :param index_path: Путь к индекс-файлу, содержащему маппинг
+    :return: Словарь {Номер документа: URL документа}
+    """
+    doc_id_url_mapping = {}
+    with codecs.open(index_path, 'r', encoding="utf-8") as index_file:
+        for line in index_file:
+            line_attrs = line.strip().split()
+            doc_id = int(line_attrs[0])
+            doc_url = line_attrs[1]
+            doc_id_url_mapping[doc_id] = doc_url
+    return doc_id_url_mapping
