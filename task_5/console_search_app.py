@@ -10,8 +10,6 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 def main():
     parser = ArgumentParser()
-    # parser.add_argument('--input_request_str', default=r"Классическая литература", type=str,
-    #                     help="Строка поискового запроса")
     parser.add_argument('--input_dict_path', default=r"../task_2/tokenized_texts/dict.txt", type=str,
                         help="Путь к словарю")
     parser.add_argument('--input_df_path', default="../task_4/tf_idf/df.txt",
@@ -33,10 +31,6 @@ def main():
     input_tf_idf_path = args.input_tf_idf_path
     input_raw_documents_dir = args.input_raw_documents_dir
     input_documents_index = args.input_documents_index
-    # output_log_path = args.output_log_path
-    # output_dir = os.path.dirname(output_log_path)
-    # if not os.path.exists(output_dir) and output_dir != '':
-    #     os.makedirs(output_dir)
 
     # Подгружаем словарь в память
     token2id = load_dict(input_dict_path)
